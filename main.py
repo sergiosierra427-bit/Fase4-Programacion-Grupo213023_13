@@ -112,3 +112,38 @@ def mostrar_reservas():
     for reserva in reservas:
         print(reserva.mostrar_reserva())
         print("----------------------------")
+def menu():
+
+    while True:
+
+        print("\n========== SOFTWARE FJ ==========")
+        print("1. Registrar cliente")
+        print("2. Registrar servicio")
+        print("3. Crear reserva")
+        print("4. Mostrar reservas")
+        print("5. Salir")
+
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            registrar_cliente()
+
+        elif opcion == "2":
+            registrar_servicio()
+
+        elif opcion == "3":
+            crear_reserva()
+
+        elif opcion == "4":
+            mostrar_reservas()
+
+        elif opcion == "5":
+            print("\nGracias por utilizar el sistema.")
+            break
+
+        else:
+            print("Opción no válida.")
+
+
+if __name__ == "__main__":
+    menu()
