@@ -18,6 +18,8 @@ from modelos.excepciones import (
 clientes = []
 servicios = []
 reservas = []
+
+
 def registrar_cliente():
     try:
         print("\n=== REGISTRO DE CLIENTE ===")
@@ -27,14 +29,16 @@ def registrar_cliente():
         correo = input("Correo: ")
 
         cliente = Cliente(nombre, identificacion, correo)
-
         clientes.append(cliente)
 
         print("\nCliente registrado correctamente.")
+        print(cliente)
 
     except ValidacionError as e:
         registrar_log(str(e))
         print("Error:", e)
+
+
 def registrar_servicio():
     try:
         print("\n=== REGISTRO DE SERVICIO ===")
@@ -57,10 +61,19 @@ def registrar_servicio():
         else:
             raise ServicioError("Servicio no válido.")
 
+        servicios.append(servicio)
+
         print("\nServicio registrado correctamente.")
-        print(servicio)
+        print(servicio.mostrar_detalle())
 
         return servicio
+
+    except ServicioError as e:
+        registrar_log(str(e))
+        print("Error:", e)
+        return None
+
+
 def crear_reserva():
     try:
         print("\n=== CREAR RESERVA ===")
@@ -71,24 +84,23 @@ def crear_reserva():
         if len(servicios) == 0:
             raise ServicioError("No hay servicios registrados.")
 
-        print("\nClientes registrados:")
+        print("\nCLIENTES")
         for i, cliente in enumerate(clientes):
             print(f"{i + 1}. {cliente.get_nombre()}")
 
-        opc_cliente = int(input("Seleccione el cliente: ")) - 1
+        opc_cliente = int(input("Seleccione un cliente: ")) - 1
         cliente = clientes[opc_cliente]
 
-        print("\nServicios registrados:")
+        print("\nSERVICIOS")
         for i, servicio in enumerate(servicios):
             print(f"{i + 1}. {servicio.mostrar_detalle()}")
 
-        opc_servicio = int(input("Seleccione el servicio: ")) - 1
+        opc_servicio = int(input("Seleccione un servicio: ")) - 1
         servicio = servicios[opc_servicio]
 
         fecha = datetime.now()
 
         reserva = Reserva(cliente, servicio, fecha)
-
         reservas.append(reserva)
 
         print("\nReserva creada correctamente.")
@@ -97,33 +109,35 @@ def crear_reserva():
     except (ClienteError, ServicioError, ReservaError, IndexError, ValueError) as e:
         registrar_log(str(e))
         print("Error:", e)
-    except ServicioError as e:
-        registrar_log(str(e))
-        print("Error:", e)
-        return None
+
+
 def mostrar_reservas():
 
     if len(reservas) == 0:
         print("\nNo hay reservas registradas.")
         return
 
-    print("\n===== RESERVAS =====")
+    print("\n====== RESERVAS ======")
 
     for reserva in reservas:
         print(reserva.mostrar_reserva())
         print("----------------------------")
+
+
 def menu():
 
     while True:
 
-        print("\n========== SOFTWARE FJ ==========")
+        print("\n==============================")
+        print(" SOFTWARE FJ ")
+        print("==============================")
         print("1. Registrar cliente")
         print("2. Registrar servicio")
         print("3. Crear reserva")
         print("4. Mostrar reservas")
         print("5. Salir")
 
-        opcion = input("Seleccione una opción: ")
+        opcion = input("\nSeleccione una opción: ")
 
         if opcion == "1":
             registrar_cliente()
