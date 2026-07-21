@@ -17,3 +17,20 @@ from modelos.excepciones import (
 
 clientes = []
 reservas = []
+def registrar_cliente():
+    try:
+        print("\n=== REGISTRO DE CLIENTE ===")
+
+        nombre = input("Nombre: ")
+        identificacion = input("Identificación: ")
+        correo = input("Correo: ")
+
+        cliente = Cliente(nombre, identificacion, correo)
+
+        clientes.append(cliente)
+
+        print("\nCliente registrado correctamente.")
+
+    except ValidacionError as e:
+        registrar_log(str(e))
+        print("Error:", e)
