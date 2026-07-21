@@ -101,3 +101,14 @@ def crear_reserva():
         registrar_log(str(e))
         print("Error:", e)
         return None
+def mostrar_reservas():
+
+    if len(reservas) == 0:
+        print("\nNo hay reservas registradas.")
+        return
+
+    print("\n===== RESERVAS =====")
+
+    for reserva in reservas:
+        print(reserva.mostrar_reserva())
+        print("----------------------------")
