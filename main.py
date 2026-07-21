@@ -2,9 +2,9 @@ from datetime import datetime
 
 from modelos.cliente import Cliente
 from modelos.servicio import (
-    CorteCabello,
-    Manicure,
-    BarberiaPremium
+    ReservaSala,
+    AlquilerEquipo,
+    AsesoriaEspecializada
 )
 from modelos.reserva import Reserva
 from modelos.logs import registrar_log
@@ -34,6 +34,8 @@ def registrar_cliente():
         print("\nCliente registrado correctamente.")
         print(cliente)
 
+        registrar_log("Cliente registrado correctamente")
+
     except ValidacionError as e:
         registrar_log(str(e))
         print("Error:", e)
@@ -41,22 +43,23 @@ def registrar_cliente():
 
 def registrar_servicio():
     try:
+
         print("\n===== REGISTRO DE SERVICIO =====")
 
-        print("1. Corte de Cabello")
-        print("2. Manicure")
-        print("3. Barbería Premium")
+        print("1. Reserva de Sala")
+        print("2. Alquiler de Equipo")
+        print("3. Asesoría Especializada")
 
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            servicio = CorteCabello()
+            servicio = ReservaSala()
 
         elif opcion == "2":
-            servicio = Manicure()
+            servicio = AlquilerEquipo()
 
         elif opcion == "3":
-            servicio = BarberiaPremium()
+            servicio = AsesoriaEspecializada()
 
         else:
             raise ServicioError("Servicio no válido.")
@@ -66,12 +69,18 @@ def registrar_servicio():
         print("\nServicio registrado correctamente.")
         print(servicio.mostrar_detalle())
 
+        registrar_log(
+            f"Servicio registrado: {servicio.nombre}"
+        )
+
     except ServicioError as e:
+
         registrar_log(str(e))
         print("Error:", e)
 
 
 def crear_reserva():
+
     try:
 
         if len(clientes) == 0:
@@ -95,7 +104,11 @@ def crear_reserva():
         print("\n===== SERVICIOS =====")
 
         for i, servicio in enumerate(servicios):
-            print(f"{i + 1}. {servicio.mostrar_detalle()}")
+            print(
+                f"{i + 1}. "
+                f"{servicio.nombre} "
+                f"(${servicio.calcular_costo():,.0f})"
+            )
 
         opcion_servicio = int(input("Seleccione un servicio: ")) - 1
 
@@ -106,12 +119,20 @@ def crear_reserva():
 
         fecha = datetime.now()
 
-        reserva = Reserva(cliente, servicio, fecha)
+        reserva = Reserva(
+            cliente,
+            servicio,
+            fecha
+        )
 
         reservas.append(reserva)
 
         print("\nReserva creada correctamente.")
         print(reserva.mostrar_reserva())
+
+        registrar_log(
+            f"Reserva creada para {cliente.get_nombre()}"
+        )
 
     except (
         ClienteError,
@@ -146,7 +167,11 @@ def mostrar_servicios():
     print("\n===== SERVICIOS =====")
 
     for servicio in servicios:
-        print(servicio.mostrar_detalle())
+
+        print(
+            f"{servicio.nombre}"
+            f" - ${servicio.calcular_costo():,.0f}"
+        )
 
 
 def mostrar_reservas():
@@ -167,7 +192,7 @@ def menu():
     while True:
 
         print("\n====================================")
-        print("      SOFTWARE FJ")
+        print("          SOFTWARE FJ")
         print("====================================")
         print("1. Registrar cliente")
         print("2. Registrar servicio")
