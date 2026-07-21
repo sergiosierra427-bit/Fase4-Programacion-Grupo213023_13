@@ -61,7 +61,42 @@ def registrar_servicio():
         print(servicio)
 
         return servicio
+def crear_reserva():
+    try:
+        print("\n=== CREAR RESERVA ===")
 
+        if len(clientes) == 0:
+            raise ClienteError("No hay clientes registrados.")
+
+        if len(servicios) == 0:
+            raise ServicioError("No hay servicios registrados.")
+
+        print("\nClientes registrados:")
+        for i, cliente in enumerate(clientes):
+            print(f"{i + 1}. {cliente.get_nombre()}")
+
+        opc_cliente = int(input("Seleccione el cliente: ")) - 1
+        cliente = clientes[opc_cliente]
+
+        print("\nServicios registrados:")
+        for i, servicio in enumerate(servicios):
+            print(f"{i + 1}. {servicio.mostrar_detalle()}")
+
+        opc_servicio = int(input("Seleccione el servicio: ")) - 1
+        servicio = servicios[opc_servicio]
+
+        fecha = datetime.now()
+
+        reserva = Reserva(cliente, servicio, fecha)
+
+        reservas.append(reserva)
+
+        print("\nReserva creada correctamente.")
+        print(reserva.mostrar_reserva())
+
+    except (ClienteError, ServicioError, ReservaError, IndexError, ValueError) as e:
+        registrar_log(str(e))
+        print("Error:", e)
     except ServicioError as e:
         registrar_log(str(e))
         print("Error:", e)
