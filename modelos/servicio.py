@@ -18,17 +18,26 @@ class Servicio(ABC):
 
 class CorteCabello(Servicio):
 
+    def __init__(self):
+        super().__init__("Corte de Cabello", 30000)
+
     def mostrar_detalle(self):
-        return f"Corte de Cabello - ${self.precio}"
+        return f"{self.nombre} - ${self.precio}"
 
 
 class Manicure(Servicio):
 
+    def __init__(self):
+        super().__init__("Manicure", 45000)
+
     def mostrar_detalle(self):
-        return f"Manicure - ${self.precio}"
+        return f"{self.nombre} - ${self.precio}"
 
 
 class BarberiaPremium(Servicio):
 
+    def __init__(self):
+        super().__init__("Barbería Premium", 60000)
+
     def mostrar_detalle(self):
-        return f"Barbería Premium - ${self.precio}"
+        return f"{self.nombre} - ${self.precio}"
