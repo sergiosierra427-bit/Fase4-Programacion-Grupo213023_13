@@ -16,6 +16,7 @@ from modelos.excepciones import (
 )
 
 clientes = []
+servicios = []
 reservas = []
 def registrar_cliente():
     try:
