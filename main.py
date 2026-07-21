@@ -22,7 +22,7 @@ reservas = []
 
 def registrar_cliente():
     try:
-        print("\n=== REGISTRO DE CLIENTE ===")
+        print("\n===== REGISTRO DE CLIENTE =====")
 
         nombre = input("Nombre: ")
         identificacion = input("Identificación: ")
@@ -41,13 +41,13 @@ def registrar_cliente():
 
 def registrar_servicio():
     try:
-        print("\n=== REGISTRO DE SERVICIO ===")
+        print("\n===== REGISTRO DE SERVICIO =====")
 
         print("1. Corte de Cabello")
         print("2. Manicure")
         print("3. Barbería Premium")
 
-        opcion = input("Seleccione un servicio: ")
+        opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
             servicio = CorteCabello()
@@ -66,17 +66,13 @@ def registrar_servicio():
         print("\nServicio registrado correctamente.")
         print(servicio.mostrar_detalle())
 
-        return servicio
-
     except ServicioError as e:
         registrar_log(str(e))
         print("Error:", e)
-        return None
 
 
 def crear_reserva():
     try:
-        print("\n=== CREAR RESERVA ===")
 
         if len(clientes) == 0:
             raise ClienteError("No hay clientes registrados.")
@@ -84,31 +80,73 @@ def crear_reserva():
         if len(servicios) == 0:
             raise ServicioError("No hay servicios registrados.")
 
-        print("\nCLIENTES")
+        print("\n===== CLIENTES =====")
+
         for i, cliente in enumerate(clientes):
             print(f"{i + 1}. {cliente.get_nombre()}")
 
-        opc_cliente = int(input("Seleccione un cliente: ")) - 1
-        cliente = clientes[opc_cliente]
+        opcion_cliente = int(input("Seleccione un cliente: ")) - 1
 
-        print("\nSERVICIOS")
+        if opcion_cliente < 0 or opcion_cliente >= len(clientes):
+            raise ClienteError("Cliente no válido.")
+
+        cliente = clientes[opcion_cliente]
+
+        print("\n===== SERVICIOS =====")
+
         for i, servicio in enumerate(servicios):
             print(f"{i + 1}. {servicio.mostrar_detalle()}")
 
-        opc_servicio = int(input("Seleccione un servicio: ")) - 1
-        servicio = servicios[opc_servicio]
+        opcion_servicio = int(input("Seleccione un servicio: ")) - 1
+
+        if opcion_servicio < 0 or opcion_servicio >= len(servicios):
+            raise ServicioError("Servicio no válido.")
+
+        servicio = servicios[opcion_servicio]
 
         fecha = datetime.now()
 
         reserva = Reserva(cliente, servicio, fecha)
+
         reservas.append(reserva)
 
         print("\nReserva creada correctamente.")
         print(reserva.mostrar_reserva())
 
-    except (ClienteError, ServicioError, ReservaError, IndexError, ValueError) as e:
+    except (
+        ClienteError,
+        ServicioError,
+        ReservaError,
+        IndexError,
+        ValueError,
+    ) as e:
+
         registrar_log(str(e))
         print("Error:", e)
+
+
+def mostrar_clientes():
+
+    if len(clientes) == 0:
+        print("\nNo hay clientes registrados.")
+        return
+
+    print("\n===== CLIENTES =====")
+
+    for cliente in clientes:
+        print(cliente)
+
+
+def mostrar_servicios():
+
+    if len(servicios) == 0:
+        print("\nNo hay servicios registrados.")
+        return
+
+    print("\n===== SERVICIOS =====")
+
+    for servicio in servicios:
+        print(servicio.mostrar_detalle())
 
 
 def mostrar_reservas():
@@ -117,25 +155,27 @@ def mostrar_reservas():
         print("\nNo hay reservas registradas.")
         return
 
-    print("\n====== RESERVAS ======")
+    print("\n===== RESERVAS =====")
 
     for reserva in reservas:
         print(reserva.mostrar_reserva())
-        print("----------------------------")
+        print("-----------------------------------")
 
 
 def menu():
 
     while True:
 
-        print("\n==============================")
-        print(" SOFTWARE FJ ")
-        print("==============================")
+        print("\n====================================")
+        print("      SOFTWARE FJ")
+        print("====================================")
         print("1. Registrar cliente")
         print("2. Registrar servicio")
         print("3. Crear reserva")
-        print("4. Mostrar reservas")
-        print("5. Salir")
+        print("4. Mostrar clientes")
+        print("5. Mostrar servicios")
+        print("6. Mostrar reservas")
+        print("7. Salir")
 
         opcion = input("\nSeleccione una opción: ")
 
@@ -149,14 +189,20 @@ def menu():
             crear_reserva()
 
         elif opcion == "4":
-            mostrar_reservas()
+            mostrar_clientes()
 
         elif opcion == "5":
-            print("\nGracias por utilizar el sistema.")
+            mostrar_servicios()
+
+        elif opcion == "6":
+            mostrar_reservas()
+
+        elif opcion == "7":
+            print("\nGracias por utilizar Software FJ.")
             break
 
         else:
-            print("Opción no válida.")
+            print("\nOpción no válida.")
 
 
 if __name__ == "__main__":
