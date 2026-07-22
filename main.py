@@ -10,178 +10,193 @@ from modelos.excepciones import (
     ReservaError
 )
 
-# Listas internas obligatorias (sin base de datos)
+# Listas internas en memoria (sin bases de datos)
 clientes = []
-servicios = []
+servicios = [
+    ReservaSala(),
+    AlquilerEquipo(),
+    AsesoriaEspecializada()
+]
 reservas = []
 
-def ejecutar_simulacion_10_operaciones():
-    print("==================================================")
-    print(" INICIO DE SIMULACIÓN: 10 OPERACIONES SOFTWARE FJ ")
-    print("==================================================")
-    
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 1: Registro VÁLIDO de un cliente (Uso de try/except/else/finally)
-    # -------------------------------------------------------------------------
-    print("\n[Op 1] Intentando registrar un cliente válido...")
+
+def registrar_cliente_interactivo():
+    print("\n--- REGISTRAR NUEVO CLIENTE ---")
+    # Uso de try/except/else/finally exigido por la guía
     try:
-        c1 = Cliente("Ana Pérez", "12345678", "ana.perez@mail.com")
-        clientes.append(c1)
-        print(f"-> Éxito: Cliente {c1.get_nombre()} registrado.")
+        nombre = input("Ingrese el nombre del cliente: ")
+        identificacion = input("Ingrese la identificación (solo números): ")
+        correo = input("Ingrese el correo electrónico: ")
+        
+        # Intentar crear el objeto Cliente (aquí saltará ValidacionError si los datos son incorrectos)
+        cliente = Cliente(nombre, identificacion, correo)
+        clientes.append(cliente)
+        print(f"¡Éxito! Cliente '{cliente.get_nombre()}' registrado correctamente.")
     except ValidacionError as e:
-        registrar_log(f"Op 1 Error: {e}")
-        print(f"-> Error capturado: {e}")
+        registrar_log(f"Error de validación al registrar cliente: {e}")
+        print(f"[EXCEPCIÓN CONTROLADA - ValidacionError]: {e}")
     else:
-        registrar_log("Op 1: Cliente registrado exitosamente sin excepciones.")
-        print("-> Bloque ELSE: Validación superada correctamente.")
+        registrar_log("Cliente registrado exitosamente sin errores.")
+        print("-> Bloque ELSE: Datos validados y guardados con éxito.")
     finally:
-        print("-> Bloque FINALLY: Operación 1 finalizada.")
+        print("-> Bloque FINALLY: Proceso de registro de cliente finalizado.")
 
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 2: Registro INVÁLIDO de un cliente (Prueba de excepción de datos)
-    # -------------------------------------------------------------------------
-    print("\n[Op 2] Intentando registrar cliente con identificación inválida (letras)...")
-    try:
-        c_invalido = Cliente("Carlos Ruiz", "ABC98765", "carlos@mail.com")
-        clientes.append(c_invalido)
-    except ValidacionError as e:
-        registrar_log(f"Op 2 Excepción esperada controlada: {e}")
-        print(f"-> Excepción controlada con éxito: {e}")
-    finally:
-        print("-> Bloque FINALLY: Operación 2 finalizada.")
 
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 3: Creación correcta del servicio 'ReservaSala'
-    # -------------------------------------------------------------------------
-    print("\n[Op 3] Creando servicio especializado: ReservaSala...")
-    try:
-        sala = ReservaSala()
-        servicios.append(sala)
-        print(f"-> Éxito: {sala.mostrar_detalle()}")
-        registrar_log("Op 3: ReservaSala creada correctamente.")
-    except Exception as e:
-        registrar_log(f"Op 3 Error: {e}")
-        print(f"-> Error: {e}")
-    finally:
-        print("-> Bloque FINALLY: Operación 3 finalizada.")
+def listar_clientes():
+    print("\n--- LISTA DE CLIENTES ---")
+    if not clientes:
+        print("No hay clientes registrados aún.")
+        return
+    for idx, c in enumerate(clientes):
+        print(f"{idx + 1}. Nombre: {c.get_nombre()} | ID: {c.get_identificacion()} | Correo: {c.get_correo()}")
 
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 4: Creación correcta del servicio 'AlquilerEquipo'
-    # -------------------------------------------------------------------------
-    print("\n[Op 4] Creando servicio especializado: AlquilerEquipo...")
-    try:
-        equipo = AlquilerEquipo()
-        servicios.append(equipo)
-        print(f"-> Éxito: {equipo.mostrar_detalle()}")
-        registrar_log("Op 4: AlquilerEquipo creado correctamente.")
-    except Exception as e:
-        registrar_log(f"Op 4 Error: {e}")
-    finally:
-        print("-> Bloque FINALLY: Operación 4 finalizada.")
 
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 5: Creación correcta del servicio 'AsesoriaEspecializada'
-    # -------------------------------------------------------------------------
-    print("\n[Op 5] Creando servicio especializado: AsesoriaEspecializada...")
-    try:
-        asesoria = AsesoriaEspecializada()
-        servicios.append(asesoria)
-        print(f"-> Éxito: {asesoria.mostrar_detalle()}")
-        registrar_log("Op 5: AsesoriaEspecializada creada correctamente.")
-    except Exception as e:
-        registrar_log(f"Op 5 Error: {e}")
-    finally:
-        print("-> Bloque FINALLY: Operación 5 finalizada.")
+def mostrar_servicios():
+    print("\n--- SERVICIOS DISPONIBLES ---")
+    for idx, s in enumerate(servicios):
+        print(f"{idx + 1}. {s.mostrar_detalle()}")
 
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 6: Demostración de métodos sobrecargados (Cálculo con impuestos/descuentos)
-    # -------------------------------------------------------------------------
-    print("\n[Op 6] Aplicando métodos sobrecargados de costos (Impuestos y Descuentos)...")
-    try:
-        if servicios:
-            # Polimorfismo y parámetros opcionales
-            costo_impuesto = servicios[0].calcular_costo(impuesto=0.19)
-            costo_completo = servicios[0].calcular_costo(impuesto=0.19, descuento=0.10)
-            print(f"-> Costo base Sala: ${servicios[0].precio:,.0f}")
-            print(f"-> Costo con 19% IVA: ${costo_impuesto:,.0f}")
-            print(f"-> Costo con 19% IVA y 10% Desc: ${costo_completo:,.0f}")
-            registrar_log("Op 6: Cálculo de costos con parámetros opcionales exitoso.")
-    except Exception as e:
-        registrar_log(f"Op 6 Error: {e}")
-        print(f"-> Error: {e}")
-    finally:
-        print("-> Bloque FINALLY: Operación 6 finalizada.")
 
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 7: Creación de una Reserva VÁLIDA (Integra cliente, servicio, duración)
-    # -------------------------------------------------------------------------
-    print("\n[Op 7] Creando una reserva exitosa...")
+def realizar_reserva_interactiva():
+    print("\n--- REALIZAR NUEVA RESERVA ---")
+    if not clientes:
+        print("[AVISO]: Debe registrar al menos un cliente antes de hacer una reserva.")
+        return
+    
+    listar_clientes()
     try:
-        if clientes and servicios:
-            reserva1 = Reserva(cliente=clientes[0], servicio=servicios[0], fecha=datetime.now(), duracion_horas=2)
-            reservas.append(reserva1)
-            print(reserva1.mostrar_reserva())
-            registrar_log("Op 7: Reserva creada exitosamente.")
-    except Exception as e:
-        registrar_log(f"Op 7 Error: {e}")
-        print(f"-> Error: {e}")
-    finally:
-        print("-> Bloque FINALLY: Operación 7 finalizada.")
-
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 8: Confirmación de la reserva
-    # -------------------------------------------------------------------------
-    print("\n[Op 8] Confirmando la reserva existente...")
-    try:
-        if reservas:
-            reservas[0].confirmar()
-            print(f"-> Estado actualizado de la reserva: {reservas[0].estado}")
-            registrar_log("Op 8: Reserva confirmada exitosamente.")
-    except Exception as e:
-        registrar_log(f"Op 8 Error: {e}")
-    finally:
-        print("-> Bloque FINALLY: Operación 8 finalizada.")
-
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 9: Cancelación de la reserva
-    # -------------------------------------------------------------------------
-    print("\n[Op 9] Cancelando la reserva...")
-    try:
-        if reservas:
-            reservas[0].cancelar()
-            print(f"-> Estado actualizado de la reserva: {reservas[0].estado}")
-            registrar_log("Op 9: Reserva cancelada exitosamente.")
-    except Exception as e:
-        registrar_log(f"Op 9 Error: {e}")
-    finally:
-        print("-> Bloque FINALLY: Operación 9 finalizada.")
-
-    # -------------------------------------------------------------------------
-    # OPERACIÓN 10: Intento fallido de procesar reserva cancelada (Encadenamiento y manejo de excepciones)
-    # -------------------------------------------------------------------------
-    print("\n[Op 10] Intentando procesar una reserva cancelada (Debe generar ReservaError)...")
-    try:
-        if reservas:
-            reservas[0].procesar()
-    except ReservaError as re:
-        # Demostración de encadenamiento de excepciones exigido por la guía
-        registrar_log(f"Op 10 Excepción controlada: {re}")
-        print(f"-> Excepción de negocio capturada correctamente: {re}")
-        raise ValueError("Fallo crítico controlado en el flujo de operaciones") from re
+        c_idx = int(input("Seleccione el número del cliente: ")) - 1
+        if c_idx < 0 or c_idx >= len(clientes):
+            raise ReservaError("El número de cliente seleccionado no existe.")
+        cliente_elegido = clientes[c_idx]
+        
+        mostrar_servicios()
+        s_idx = int(input("Seleccione el número del servicio: ")) - 1
+        if s_idx < 0 or s_idx >= len(servicios):
+            raise ReservaError("El número de servicio seleccionado no existe.")
+        servicio_elegido = servicios[s_idx]
+        
+        duracion = int(input("Ingrese la duración en horas: "))
+        if duracion <= 0:
+            raise ReservaError("La duración en horas debe ser mayor a cero.")
+        
+        # Creación de la reserva con los datos ingresados
+        reserva = Reserva(cliente=cliente_elegido, servicio=servicio_elegido, fecha=datetime.now(), duracion_horas=duracion)
+        reservas.append(reserva)
+        print("\n¡Reserva creada con éxito!")
+        print(reserva.mostrar_reserva())
+        registrar_log(f"Reserva creada para {cliente_elegido.get_nombre()} con el servicio {servicio_elegido.nombre}")
+        
     except ValueError as ve:
-        registrar_log(f"Op 10 Encadenamiento de excepción exitoso: {ve}")
-        print(f"-> Excepción encadenada manejada de forma estable: {ve}")
-    finally:
-        print("-> Bloque FINALLY: Operación 10 finalizada.")
+        registrar_log(f"Error de formato numérico en reserva: {ve}")
+        print("[ERROR]: Debe ingresar un valor numérico válido.")
+    except (ReservaError, ValidacionError) as e:
+        registrar_log(f"Error en reserva: {e}")
+        print(f"[EXCEPCIÓN CONTROLADA]: {e}")
 
-    print("\n==================================================")
-    print(" ¡SIMULACIÓN DE LAS 10 OPERACIONES FINALIZADA CON ÉXITO! ")
-    print(" Revisa el archivo 'errores.txt' para verificar los registros de logs.")
-    print("==================================================")
+
+def gestionar_reservas():
+    if not reservas:
+        print("\nNo hay reservas creadas para gestionar.")
+        return
+        
+    print("\n--- GESTIÓN DE RESERVAS ---")
+    for idx, r in enumerate(reservas):
+        print(f"{idx + 1}. Cliente: {r.cliente.get_nombre()} | Servicio: {r.servicio.nombre} | Estado: {r.estado}")
+        
+    try:
+        r_idx = int(input("Seleccione el número de la reserva a gestionar: ")) - 1
+        if r_idx < 0 or r_idx >= len(reservas):
+            print("Reserva no encontrada.")
+            return
+            
+        reserva = reservas[r_idx]
+        print("1. Confirmar reserva")
+        print("2. Cancelar reserva")
+        print("3. Procesar reserva (Prueba de excepción si está cancelada)")
+        opcion = input("Elija una opción de gestión: ")
+        
+        if opcion == "1":
+            reserva.confirmar()
+            print("¡Reserva confirmada con éxito!")
+            registrar_log(f"Reserva de {reserva.cliente.get_nombre()} confirmada.")
+        elif opcion == "2":
+            reserva.cancelar()
+            print("¡Reserva cancelada!")
+            registrar_log(f"Reserva de {reserva.cliente.get_nombre()} cancelada.")
+        elif opcion == "3":
+            # Esto lanzará ReservaError si la reserva fue cancelada previamente
+            reserva.procesar()
+            print("¡Reserva procesada con éxito!")
+            registrar_log(f"Reserva procesada.")
+        else:
+            print("Opción no válida.")
+            
+    except ReservaError as re:
+        registrar_log(f"Excepción controlada en gestión de reserva: {re}")
+        print(f"[EXCEPCIÓN DE NEGOCIO]: {re}")
+    except ValueError:
+        print("[ERROR]: Entrada inválida.")
+
+
+def probar_calculo_sobrecargado():
+    print("\n--- PRUEBA DE MÉTODOS SOBRECARGADOS (COSTOS) ---")
+    mostrar_servicios()
+    try:
+        s_idx = int(input("Seleccione el servicio para calcular costo: ")) - 1
+        if s_idx < 0 or s_idx >= len(servicios):
+            print("Servicio inválido.")
+            return
+        serv = servicios[s_idx]
+        
+        imp = float(input("Ingrese el porcentaje de impuesto (ej: 0.19 para 19%): "))
+        desc = float(input("Ingrese el porcentaje de descuento (ej: 0.10 para 10%): "))
+        
+        costo_final = serv.calcular_costo(impuesto=imp, descuento=desc)
+        print(f"\nEl costo calculado para {serv.nombre} con impuesto de {imp*100}% y descuento de {desc*100}% es: ${costo_final:,.0f}")
+        registrar_log(f"Cálculo de costo personalizado ejecutado para {serv.nombre}.")
+    except ValueError:
+        print("[ERROR]: Ingrese valores numéricos válidos para impuestos y descuentos.")
+
+
+def main():
+    while True:
+        print("\n========================================")
+        print(" SISTEMA DE GESTIÓN SOFTWARE FJ - MENÚ ")
+        print("========================================")
+        print("1. Registrar Cliente (Con validación y try/except/else/finally)")
+        print("2. Ver Lista de Clientes")
+        print("3. Ver Servicios Disponibles")
+        print("4. Realizar Reserva")
+        print("5. Gestionar Reservas (Confirmar / Cancelar / Procesar)")
+        print("6. Calcular Costo Personalizado (Métodos sobrecargados)")
+        print("7. Salir del Sistema")
+        
+        opcion = input("\nSeleccione una opción (1-7): ")
+        
+        if opcion == "1":
+            registrar_cliente_interactivo()
+        elif opcion == "2":
+            listar_clientes()
+        elif opcion == "3":
+            mostrar_servicios()
+        elif opcion == "4":
+            realizar_reserva_interactiva()
+        elif opcion == "5":
+            gestionar_reservas()
+        elif opcion == "6":
+            probar_calculo_sobrecargado()
+        elif opcion == "7":
+            print("\nSaliendo del sistema Software FJ. ¡Hasta pronto!")
+            registrar_log("Cierre normal del sistema.")
+            break
+        else:
+            print("[AVISO]: Opción no válida. Por favor digite un número entre 1 y 7.")
+
 
 if __name__ == "__main__":
     try:
-        ejecutar_simulacion_10_operaciones()
+        main()
     except Exception as global_error:
-        registrar_log(f"Error global no atrapado: {global_error}")
-        print(f"El sistema se mantuvo estable ante el error global: {global_error}")
+        registrar_log(f"Error crítico global no controlado: {global_error}")
+        print(f"Error inesperado en el sistema: {global_error}")
