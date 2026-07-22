@@ -1,13 +1,8 @@
 from datetime import datetime
-
 from modelos.cliente import Cliente
-from modelos.servicio import (
-    ReservaSala,
-    AlquilerEquipo,
-    AsesoriaEspecializada
-)
+from modelos.servicio import ReservaSala, AlquilerEquipo, AsesoriaEspecializada
 from modelos.reserva import Reserva
-from modelos.logs import registrar_log
+from modelos.logs import registrar_log  # O la función encargada de escribir en el archivo de log
 from modelos.excepciones import (
     ValidacionError,
     ClienteError,
@@ -15,281 +10,145 @@ from modelos.excepciones import (
     ReservaError
 )
 
+# Listas internas para la gestión en memoria (sin bases de datos)
 clientes = []
 servicios = []
 reservas = []
 
-
-def registrar_cliente():
-    try:
-        print("\n===== REGISTRO DE CLIENTE =====")
-        nombre = input("Nombre: ")
-        identificacion = input("Identificación: ")
-        correo = input("Correo: ")
-
-        cliente = Cliente(nombre, identificacion, correo)
-        clientes.append(cliente)
-
-        print("\nCliente registrado correctamente.")
-        print(cliente)
-        registrar_log("Cliente registrado correctamente")
-
-    except ValidacionError as e:
-        registrar_log(str(e))
-        print("Error de validación:", e)
-
-
-def registrar_servicio():
-    try:
-        print("\n===== REGISTRO DE SERVICIO =====")
-        print("1. Reserva de Sala")
-        print("2. Alquiler de Equipo")
-        print("3. Asesoría Especializada")
-
-        opcion = input("Seleccione una opción: ")
-
-        if opcion == "1":
-            servicio = ReservaSala()
-        elif opcion == "2":
-            servicio = AlquilerEquipo()
-        elif opcion == "3":
-            servicio = AsesoriaEspecializada()
-        else:
-            raise ServicioError("Servicio no válido.")
-
-        servicios.append(servicio)
-
-        print("\nServicio registrado correctamente.")
-        print(servicio.mostrar_detalle())
-        registrar_log(f"Servicio registrado: {servicio.nombre}")
-
-    except ServicioError as e:
-        registrar_log(str(e))
-        print("Error de servicio:", e)
-
-
-def crear_reserva():
-    try:
-        if len(clientes) == 0:
-            raise ClienteError("No hay clientes registrados.")
-
-        if len(servicios) == 0:
-            raise ServicioError("No hay servicios registrados.")
-
-        print("\n===== CLIENTES =====")
-        for i, cliente in enumerate(clientes):
-            print(f"{i + 1}. {cliente.get_nombre()}")
-
-        opcion_cliente = int(input("Seleccione un cliente: ")) - 1
-        if opcion_cliente < 0 or opcion_cliente >= len(clientes):
-            raise ClienteError("Cliente no válido.")
-
-        cliente = clientes[opcion_cliente]
-
-        print("\n===== SERVICIOS =====")
-        for i, servicio in enumerate(servicios):
-            print(f"{i + 1}. {servicio.nombre} (${servicio.calcular_costo():,.0f})")
-
-        opcion_servicio = int(input("Seleccione un servicio: ")) - 1
-        if opcion_servicio < 0 or opcion_servicio >= len(servicios):
-            raise ServicioError("Servicio no válido.")
-
-        servicio = servicios[opcion_servicio]
-        fecha = datetime.now()
-
-        reserva = Reserva(cliente, servicio, fecha)
-        reservas.append(reserva)
-
-        print("\nReserva creada correctamente.")
-        print(reserva.mostrar_reserva())
-        registrar_log(f"Reserva creada para {cliente.get_nombre()}")
-
-    except (ClienteError, ServicioError, ReservaError, IndexError, ValueError) as e:
-        registrar_log(str(e))
-        print("Error en reserva:", e)
-
-
-def mostrar_clientes():
-    if len(clientes) == 0:
-        print("\nNo hay clientes registrados.")
-        return
-    print("\n===== CLIENTES =====")
-    for cliente in clientes:
-        print(cliente)
-
-
-def mostrar_servicios():
-    if len(servicios) == 0:
-        print("\nNo hay servicios registrados.")
-        return
-    print("\n===== SERVICIOS =====")
-    for servicio in servicios:
-        print(f"{servicio.nombre} - ${servicio.calcular_costo():,.0f}")
-
-
-def mostrar_reservas():
-    if len(reservas) == 0:
-        print("\nNo hay reservas registradas.")
-        return
-    print("\n===== RESERVAS =====")
-    for reserva in reservas:
-        print(reserva.mostrar_reserva())
-        print("-----------------------------------")
-
-
-def ejecutar_simulacion_10_operaciones():
-    print("\n==================================================")
-    print("      SIMULACIÓN DE LAS 10 OPERACIONES")
-    print("==================================================")
+def ejecutar_simulacion():
+    print("=== INICIO DE LA SIMULACIÓN DEL SISTEMA SOFTWARE FJ ===")
     
-    global clientes, servicios, reservas
-    clientes.clear()
-    servicios.clear()
-    reservas.clear()
-
-    # 1. Cliente válido
-    print("\n1. Cliente válido.")
+    # Se deben simular al menos 10 operaciones (éxitos y fallos controlados)
+    
+    # --- OPERACIÓN 1: Registro válido de un cliente ---
     try:
-        c1 = Cliente("Carlos Pérez", "1098765432", "carlos@unad.edu.co")
+        print("\n--- Operación 1: Registrar cliente válido ---")
+        # Bloque try para capturar errores de validación de datos personales
+        c1 = Cliente("12345678", "Ana Pérez", "ana@mail.com", "3001234567")
         clientes.append(c1)
-        print("   -> Éxito: Cliente registrado correctamente.")
-        registrar_log("Simulación 1: Cliente válido registrado")
-    except Exception as e:
-        print("   -> Error:", e)
+        print(f"Cliente registrado con éxito: {c1.nombre}")
+    except (ValidacionError, ClienteError) as e:
+        registrar_log(f"Error en Operación 1: {e}")
+        print(f"Error controlado: {e}")
+    else:
+        registrar_log("Operación 1 completada exitosamente.")
+    finally:
+        print("Fin del bloque de la Operación 1.")
 
-    # 2. Cliente inválido
-    print("\n2. Cliente inválido.")
+    # --- OPERACIÓN 2: Registro inválido de un cliente (prueba de excepción) ---
     try:
-        c_invalido = Cliente("Ana Gómez", "ABC123", "ana@unad.edu.co")
-        clientes.append(c_invalido)
-    except ValidacionError as e:
-        print(f"   -> Excepción controlada: {e}")
-        registrar_log(f"Simulación 2 capturada: {e}")
+        print("\n--- Operación 2: Registrar cliente con datos inválidos ---")
+        # Datos erróneos (ej. cédula muy corta o correo sin @) para forzar excepción
+        c_inv = Cliente("123", "Carlos", "correo-invalido", "abc")
+        clientes.append(c_inv)
+    except (ValidacionError, ClienteError) as e:
+        registrar_log(f"Excepción capturada correctamente en Operación 2: {e}")
+        print(f"Excepción esperada manejada: {e}")
+    else:
+        print("Cliente agregado por error.")
+    finally:
+        print("Fin del bloque de la Operación 2.")
 
-    # 3. Cliente válido
-    print("\n3. Cliente válido.")
+    # --- OPERACIÓN 3: Creación correcta de un servicio (Ej. Sala) ---
     try:
-        c2 = Cliente("María Rodríguez", "1012345678", "maria@unad.edu.co")
-        clientes.append(c2)
-        print("   -> Éxito: Segundo cliente registrado correctamente.")
-        registrar_log("Simulación 3: Segundo cliente válido registrado")
-    except Exception as e:
-        print("   -> Error:", e)
-
-    # 4. Servicio válido
-    print("\n4. Servicio válido.")
-    try:
-        s1 = ReservaSala()
-        servicios.append(s1)
-        print(f"   -> Éxito: Servicio registrado ({s1.nombre}).")
-        registrar_log("Simulación 4: Servicio válido registrado")
-    except Exception as e:
-        print("   -> Error:", e)
-
-    # 5. Servicio válido
-    print("\n5. Servicio válido.")
-    try:
-        s2 = AlquilerEquipo()
-        servicios.append(s2)
-        print(f"   -> Éxito: Servicio registrado ({s2.nombre}).")
-        registrar_log("Simulación 5: Segundo servicio válido registrado")
-    except Exception as e:
-        print("   -> Error:", e)
-
-    # 6. Servicio inválido
-    print("\n6. Servicio inválido.")
-    try:
-        codigo_falso = "99"
-        if codigo_falso not in ["1", "2", "3"]:
-            raise ServicioError("El código de servicio no existe.")
+        print("\n--- Operación 3: Crear servicio de Sala válido ---")
+        sala1 = ReservaSala(id_servicio="S001", costo_base=100.0, capacidad=10)
+        servicios.append(sala1)
+        print(f"Servicio creado: {sala1.descripcion()}")
     except ServicioError as e:
-        print(f"   -> Excepción controlada: {e}")
-        registrar_log(f"Simulación 6 capturada: {e}")
+        registrar_log(f"Error en Operación 3: {e}")
+        print(f"Error: {e}")
+    finally:
+        print("Fin Operación 3.")
 
-    # 7. Reserva válida
-    print("\n7. Reserva válida.")
+    # --- OPERACIÓN 4: Creación incorrecta de un servicio (Parámetros inválidos) ---
     try:
-        r1 = Reserva(clientes[0], servicios[0], datetime.now())
-        r1.confirmar()
-        reservas.append(r1)
-        print("   -> Éxito: Reserva creada y confirmada.")
-        registrar_log("Simulación 7: Reserva válida creada")
-    except Exception as e:
-        print("   -> Error:", e)
+        print("\n--- Operación 4: Crear servicio con costo negativo ---")
+        sala_inv = ReservaSala(id_servicio="S002", costo_base=-50.0, capacidad=0)
+        servicios.append(sala_inv)
+    except ServicioError as e:
+        registrar_log(f"Excepción esperada en Operación 4: {e}")
+        print(f"Excepción controlada en servicio: {e}")
+    finally:
+        print("Fin Operación 4.")
 
-    # 8. Reserva válida
-    print("\n8. Reserva válida.")
+    # --- OPERACIÓN 5: Creación de Alquiler de Equipo ---
     try:
-        r2 = Reserva(clientes[1], servicios[1], datetime.now())
-        r2.confirmar()
-        reservas.append(r2)
-        print("   -> Éxito: Segunda reserva creada y confirmada.")
-        registrar_log("Simulación 8: Segunda reserva válida creada")
-    except Exception as e:
-        print("   -> Error:", e)
+        print("\n--- Operación 5: Crear servicio de Alquiler de Equipo ---")
+        equipo1 = AlquilerEquipo(id_servicio="E001", costo_base=50.0, tipo_equipo="Portátil")
+        servicios.append(equipo1)
+        print(f"Servicio creado: {equipo1.descripcion()}")
+    except ServicioError as e:
+        registrar_log(f"Error en Operación 5: {e}")
+    finally:
+        print("Fin Operación 5.")
 
-    # 9. Reserva inválida
-    print("\n9. Reserva inválida.")
+    # --- OPERACIÓN 6: Creación de Asesoría Especializada ---
     try:
-        indice_inexistente = 99
-        if indice_inexistente >= len(clientes):
-            raise ClienteError("El cliente seleccionado no es válido.")
-    except ClienteError as e:
-        print(f"   -> Excepción controlada: {e}")
-        registrar_log(f"Simulación 9 capturada: {e}")
+        print("\n--- Operación 6: Crear Asesoría Especializada ---")
+        asesoria1 = AsesoriaEspecializada(id_servicio="A001", costo_base=200.0, area="Arquitectura de Software")
+        servicios.append(asesoria1)
+        print(f"Servicio creado: {asesoria1.descripcion()}")
+    except ServicioError as e:
+        registrar_log(f"Error en Operación 6: {e}")
+    finally:
+        print("Fin Operación 6.")
 
-    # 10. Procesar reserva cancelada
-    print("\n10. Procesar reserva cancelada.")
+    # --- OPERACIÓN 7: Reserva exitosa (integrando cliente y servicio) ---
     try:
-        r_falla = Reserva(clientes[0], servicios[0], datetime.now())
-        r_falla.cancelar()
-        print(f"   -> Estado actual: {r_falla.estado}")
-        r_falla.procesar()
+        print("\n--- Operación 7: Realizar una reserva exitosa ---")
+        if clientes and servicios:
+            # Usando métodos sobrecargados de cálculo de costos (ej. con parámetros opcionales o descuentos)
+            reserva1 = Reserva(id_reserva="R001", cliente=clientes[0], servicio=servicios[0], duracion_horas=3)
+            # Demostración de métodos sobrecargados de costos si aplican
+            costo_total = servicios[0].calcular_costo(3, descuento=0.1) 
+            reservas.append(reserva1)
+            print(f"Reserva creada con éxito. Costo calculado con descuento: {costo_total}")
+    except (ReservaError, ServicioError) as e:
+        registrar_log(f"Error en Operación 7: {e}")
+        print(f"Error: {e}")
+    finally:
+        print("Fin Operación 7.")
+
+    # --- OPERACIÓN 8: Reserva fallida (Servicio no disponible o parámetros erróneos) ---
+    try:
+        print("\n--- Operación 8: Intentar reserva con datos incorrectos ---")
+        # Intentar reservar usando un objeto nulo o duración negativa
+        reserva_fallida = Reserva(id_reserva="R002", cliente=clientes[0], servicio=servicios[0], duracion_horas=-5)
     except ReservaError as e:
-        print(f"   -> Excepción de negocio controlada: {e}")
-        registrar_log(f"Simulación 10 capturada: {e}")
-    
-    print("\n==================================================")
-    print("      SIMULACIÓN FINALIZADA CORRECTAMENTE")
-    print("==================================================\n")
+        registrar_log(f"Excepción capturada en Operación 8 (Reserva fallida controlada): {e}")
+        print(f"Reserva fallida controlada correctamente: {e}")
+    finally:
+        print("Fin Operación 8.")
 
+    # --- OPERACIÓN 9: Procesamiento / Confirmación de Reserva ---
+    try:
+        print("\n--- Operación 9: Confirmar reserva existente ---")
+        if reservas:
+            reservas[0].confirmar()
+            print("Reserva confirmada exitosamente.")
+    except ReservaError as e:
+        registrar_log(f"Error al confirmar reserva en Operación 9: {e}")
+        print(f"Error: {e}")
+    finally:
+        print("Fin Operación 9.")
 
-def menu():
-    while True:
-        print("\n====================================")
-        print("         SOFTWARE FJ")
-        print("====================================")
-        print("1. Registrar cliente")
-        print("2. Registrar servicio")
-        print("3. Crear reserva")
-        print("4. Mostrar clientes")
-        print("5. Mostrar servicios")
-        print("6. Mostrar reservas")
-        print("7. Ejecutar Simulación de 10 Operaciones")
-        print("8. Salir")
-
-        opcion = input("\nSeleccione una opción: ")
-
-        if opcion == "1":
-            registrar_cliente()
-        elif opcion == "2":
-            registrar_servicio()
-        elif opcion == "3":
-            crear_reserva()
-        elif opcion == "4":
-            mostrar_clientes()
-        elif opcion == "5":
-            mostrar_servicios()
-        elif opcion == "6":
-            mostrar_reservas()
-        elif opcion == "7":
-            ejecutar_simulacion_10_operaciones()
-        elif opcion == "8":
-            print("\nGracias por utilizar Software FJ.")
-            break
-        else:
-            print("\nOpción no válida.")
-
+    # --- OPERACIÓN 10: Cancelación de Reserva con encadenamiento de excepciones ---
+    try:
+        print("\n--- Operación 10: Cancelación de una reserva ---")
+        if reservas:
+            reservas[0].cancelar()
+            print("Reserva cancelada correctamente.")
+    except Exception as e:
+        # Ejemplo de encadenamiento de excepciones (raise ... from ...) si ocurre un fallo crítico
+        registrar_log(f"Error crítico en Operación 10: {e}")
+        raise ReservaError("Fallo crítico en el flujo de cancelación") from e
+    finally:
+        print("Fin de la simulación de las 10 operaciones.")
 
 if __name__ == "__main__":
-    menu()
+    try:
+        ejecutar_simulacion()
+    except Exception as general_error:
+        registrar_log(f"Error global no controlado en main: {general_error}")
+        print(f"El sistema se mantuvo estable a pesar de un error global: {general_error}")
