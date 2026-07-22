@@ -43,7 +43,6 @@ def registrar_cliente():
 
 def registrar_servicio():
     try:
-
         print("\n===== REGISTRO DE SERVICIO =====")
 
         print("1. Reserva de Sala")
@@ -74,15 +73,12 @@ def registrar_servicio():
         )
 
     except ServicioError as e:
-
         registrar_log(str(e))
         print("Error:", e)
 
 
 def crear_reserva():
-
     try:
-
         if len(clientes) == 0:
             raise ClienteError("No hay clientes registrados.")
 
@@ -141,13 +137,11 @@ def crear_reserva():
         IndexError,
         ValueError,
     ) as e:
-
         registrar_log(str(e))
         print("Error:", e)
 
 
 def mostrar_clientes():
-
     if len(clientes) == 0:
         print("\nNo hay clientes registrados.")
         return
@@ -159,7 +153,6 @@ def mostrar_clientes():
 
 
 def mostrar_servicios():
-
     if len(servicios) == 0:
         print("\nNo hay servicios registrados.")
         return
@@ -167,7 +160,6 @@ def mostrar_servicios():
     print("\n===== SERVICIOS =====")
 
     for servicio in servicios:
-
         print(
             f"{servicio.nombre}"
             f" - ${servicio.calcular_costo():,.0f}"
@@ -175,7 +167,6 @@ def mostrar_servicios():
 
 
 def mostrar_reservas():
-
     if len(reservas) == 0:
         print("\nNo hay reservas registradas.")
         return
@@ -187,57 +178,11 @@ def mostrar_reservas():
         print("-----------------------------------")
 
 
-def menu():
-
-    while True:
-
-        print("\n====================================")
-        print("          SOFTWARE FJ")
-        print("====================================")
-        print("1. Registrar cliente")
-        print("2. Registrar servicio")
-        print("3. Crear reserva")
-        print("4. Mostrar clientes")
-        print("5. Mostrar servicios")
-        print("6. Mostrar reservas")
-        print("7. Salir")
-
-        opcion = input("\nSeleccione una opción: ")
-
-        if opcion == "1":
-            registrar_cliente()
-
-        elif opcion == "2":
-            registrar_servicio()
-
-        elif opcion == "3":
-            crear_reserva()
-
-        elif opcion == "4":
-            mostrar_clientes()
-
-        elif opcion == "5":
-            mostrar_servicios()
-
-        elif opcion == "6":
-            mostrar_reservas()
-
-        elif opcion == "7":
-            print("\nGracias por utilizar Software FJ.")
-            break
-
-        else:
-            print("\nOpción no válida.")
-
-
-if __name__ == "__main__":
-    menu()
 def ejecutar_simulacion_10_operaciones():
     print("\n==================================================")
     print(" INICIANDO SIMULACIÓN AUTOMÁTICA DE 10 OPERACIONES ")
     print("==================================================")
     
-    # Limpiar listas para la prueba limpia
     global clientes, servicios, reservas
     clientes.clear()
     servicios.clear()
@@ -326,8 +271,8 @@ def ejecutar_simulacion_10_operaciones():
     except Exception as e:
         print("Error:", e)
 
-    # 9. Reserva inválida (Sin clientes registrados o índice erróneo)
-    print("\n--- Op 9: Creación de Reserva Inválida (Sin datos / Índice erróneo) ---")
+    # 9. Reserva inválida (Índice erróneo)
+    print("\n--- Op 9: Creación de Reserva Inválida (Índice erróneo) ---")
     try:
         print("Intentando acceder a un índice de cliente que no existe...")
         indice_erroneo = 99
@@ -337,33 +282,67 @@ def ejecutar_simulacion_10_operaciones():
         registrar_log(f"Simulación capturada - {str(e)}")
         print("Excepción controlada con éxito:", e)
 
-    # 10. Procesar reserva cancelada (Manejo de excepciones específico)
+    # 10. Procesar reserva cancelada
     print("\n--- Op 10: Procesar Reserva Cancelada ---")
     try:
         r3 = Reserva(clientes[0], servicios[0], datetime.now())
-        r3.cancelar()  # La cancelamos a propósito
+        r3.cancelar()
         print(f"Estado actual: {r3.estado}")
         print("Intentando procesar la reserva cancelada...")
-        r3.procesar()  # Esto debe lanzar ReservaError
+        r3.procesar()
     except ReservaError as e:
         registrar_log(f"Simulación capturada - {str(e)}")
         print("Excepción de negocio controlada con éxito:", e)
     
     print("\n==================================================")
     print(" ¡SIMULACIÓN DE 10 OPERACIONES FINALIZADA CON ÉXITO! ")
-    print(" Revisa el archivo 'errores.txt' para ver el registro.")
     print("==================================================\n")
-print("1. Registrar cliente")
+
+
+def menu():
+    while True:
+        print("\n====================================")
+        print("         SOFTWARE FJ")
+        print("====================================")
+        print("1. Registrar cliente")
         print("2. Registrar servicio")
         print("3. Crear reserva")
         print("4. Mostrar clientes")
         print("5. Mostrar servicios")
         print("6. Mostrar reservas")
-        print("7. Ejecutar Simulación de 10 Operaciones") # <-- Opción nueva
+        print("7. Ejecutar Simulación de 10 Operaciones")
         print("8. Salir")
-elif opcion == "7":
+
+        opcion = input("\nSeleccione una opción: ")
+
+        if opcion == "1":
+            registrar_cliente()
+
+        elif opcion == "2":
+            registrar_servicio()
+
+        elif opcion == "3":
+            crear_reserva()
+
+        elif opcion == "4":
+            mostrar_clientes()
+
+        elif opcion == "5":
+            mostrar_servicios()
+
+        elif opcion == "6":
+            mostrar_reservas()
+
+        elif opcion == "7":
             ejecutar_simulacion_10_operaciones()
 
         elif opcion == "8":
             print("\nGracias por utilizar Software FJ.")
             break
+
+        else:
+            print("\nOpción no válida.")
+
+
+if __name__ == "__main__":
+    menu()
