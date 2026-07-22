@@ -232,3 +232,124 @@ def menu():
 
 if __name__ == "__main__":
     menu()
+def ejecutar_simulacion_10_operaciones():
+    print("\n==================================================")
+    print(" INICIANDO SIMULACIÓN AUTOMÁTICA DE 10 OPERACIONES ")
+    print("==================================================")
+    
+    # Limpiar listas para la prueba limpia
+    global clientes, servicios, reservas
+    clientes.clear()
+    servicios.clear()
+    reservas.clear()
+
+    # 1. Cliente válido
+    print("\n--- Op 1: Registro de Cliente Válido ---")
+    try:
+        c1 = Cliente("Carlos Pérez", "1098765432", "carlos@unad.edu.co")
+        clientes.append(c1)
+        print("Éxito:", c1)
+        registrar_log("Simulación: Cliente válido registrado")
+    except Exception as e:
+        print("Error:", e)
+
+    # 2. Cliente inválido (identificación con letras)
+    print("\n--- Op 2: Registro de Cliente Inválido ---")
+    try:
+        print("Intentando registrar cliente con identificación 'ABC123'...")
+        c_malo = Cliente("Ana Gómez", "ABC123", "ana@unad.edu.co")
+        clientes.append(c_malo)
+    except ValidacionError as e:
+        registrar_log(f"Simulación capturada - {str(e)}")
+        print("Excepción controlada con éxito:", e)
+
+    # 3. Cliente válido (segundo cliente)
+    print("\n--- Op 3: Registro de Segundo Cliente Válido ---")
+    try:
+        c2 = Cliente("María Rodríguez", "1012345678", "maria@unad.edu.co")
+        clientes.append(c2)
+        print("Éxito:", c2)
+        registrar_log("Simulación: Segundo cliente válido registrado")
+    except Exception as e:
+        print("Error:", e)
+
+    # 4. Servicio válido (Reserva de Sala)
+    print("\n--- Op 4: Registro de Servicio Válido (Sala) ---")
+    try:
+        s1 = ReservaSala()
+        servicios.append(s1)
+        print("Éxito:", s1.mostrar_detalle())
+        registrar_log("Simulación: Servicio de sala registrado")
+    except Exception as e:
+        print("Error:", e)
+
+    # 5. Servicio válido (Alquiler de Equipo)
+    print("\n--- Op 5: Registro de Servicio Válido (Equipo) ---")
+    try:
+        s2 = AlquilerEquipo()
+        servicios.append(s2)
+        print("Éxito:", s2.mostrar_detalle())
+        registrar_log("Simulación: Alquiler de equipo registrado")
+    except Exception as e:
+        print("Error:", e)
+
+    # 6. Servicio inválido (Forzando opción errónea)
+    print("\n--- Op 6: Registro de Servicio Inválido ---")
+    try:
+        print("Intentando invocar un servicio con código inexistente ('99')...")
+        opcion_falsa = "99"
+        if opcion_falsa not in ["1", "2", "3"]:
+            raise ServicioError("Código de servicio no disponible.")
+    except ServicioError as e:
+        registrar_log(f"Simulación capturada - {str(e)}")
+        print("Excepción controlada con éxito:", e)
+
+    # 7. Reserva válida 1
+    print("\n--- Op 7: Creación de Reserva Válida #1 ---")
+    try:
+        r1 = Reserva(clientes[0], servicios[0], datetime.now())
+        r1.confirmar()
+        reservas.append(r1)
+        print("Éxito:", r1.mostrar_reserva())
+        registrar_log("Simulación: Reserva 1 creada y confirmada")
+    except Exception as e:
+        print("Error:", e)
+
+    # 8. Reserva válida 2
+    print("\n--- Op 8: Creación de Reserva Válida #2 ---")
+    try:
+        r2 = Reserva(clientes[1], servicios[1], datetime.now())
+        r2.confirmar()
+        reservas.append(r2)
+        print("Éxito:", r2.mostrar_reserva())
+        registrar_log("Simulación: Reserva 2 creada y confirmada")
+    except Exception as e:
+        print("Error:", e)
+
+    # 9. Reserva inválida (Sin clientes registrados o índice erróneo)
+    print("\n--- Op 9: Creación de Reserva Inválida (Sin datos / Índice erróneo) ---")
+    try:
+        print("Intentando acceder a un índice de cliente que no existe...")
+        indice_erroneo = 99
+        if indice_erroneo >= len(clientes):
+            raise ClienteError("El índice de cliente seleccionado no es válido.")
+    except ClienteError as e:
+        registrar_log(f"Simulación capturada - {str(e)}")
+        print("Excepción controlada con éxito:", e)
+
+    # 10. Procesar reserva cancelada (Manejo de excepciones específico)
+    print("\n--- Op 10: Procesar Reserva Cancelada ---")
+    try:
+        r3 = Reserva(clientes[0], servicios[0], datetime.now())
+        r3.cancelar()  # La cancelamos a propósito
+        print(f"Estado actual: {r3.estado}")
+        print("Intentando procesar la reserva cancelada...")
+        r3.procesar()  # Esto debe lanzar ReservaError
+    except ReservaError as e:
+        registrar_log(f"Simulación capturada - {str(e)}")
+        print("Excepción de negocio controlada con éxito:", e)
+    
+    print("\n==================================================")
+    print(" ¡SIMULACIÓN DE 10 OPERACIONES FINALIZADA CON ÉXITO! ")
+    print(" Revisa el archivo 'errores.txt' para ver el registro.")
+    print("==================================================\n")
