@@ -353,3 +353,17 @@ def ejecutar_simulacion_10_operaciones():
     print(" ¡SIMULACIÓN DE 10 OPERACIONES FINALIZADA CON ÉXITO! ")
     print(" Revisa el archivo 'errores.txt' para ver el registro.")
     print("==================================================\n")
+print("1. Registrar cliente")
+        print("2. Registrar servicio")
+        print("3. Crear reserva")
+        print("4. Mostrar clientes")
+        print("5. Mostrar servicios")
+        print("6. Mostrar reservas")
+        print("7. Ejecutar Simulación de 10 Operaciones") # <-- Opción nueva
+        print("8. Salir")
+elif opcion == "7":
+            ejecutar_simulacion_10_operaciones()
+
+        elif opcion == "8":
+            print("\nGracias por utilizar Software FJ.")
+            break
